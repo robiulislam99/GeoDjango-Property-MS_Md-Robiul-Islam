@@ -1,0 +1,44 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    container_name: postgres-postgis-pgvector
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    ports:
+      - "5442:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    container_name: django-app
+    environment:
+      DB_NAME: appdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgres        # ← service name, not localhost
+      DB_PORT: 5432            # ← internal docker port, not 5442
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app                 # live code reload
+      - media_data:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  media_data:
