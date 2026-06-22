@@ -2,7 +2,7 @@ import pandas as pd
 from django.core.management.base import BaseCommand
 from django.contrib.gis.geos import Point
 from django.utils.text import slugify
-from property_app.models import Location, Property
+from property_app.models import Location, Property, Amenity
 
 
 class Command(BaseCommand):
@@ -21,17 +21,19 @@ class Command(BaseCommand):
         skipped_count = 0
 
         for _, row in df.iterrows():
+            # Get or create Location
             location, _ = Location.objects.get_or_create(
                 city=row["city"],
                 country=row["country"],
                 defaults={
                     "name": f"{row['city']}, {row['state']}",
-                    "slug": slugify(f"{row['city']}-{row['country']}"),
+                    "slug": slugify(f"{row['city']}-{row['state']}-{row['country']}"),
                     "state": row.get("state", ""),
                     "point": Point(float(row["longitude"]), float(row["latitude"]), srid=4326),
                 },
             )
 
+            # Build unique slug
             base_slug = slugify(row["title"])
             slug = base_slug
             counter = 1
@@ -39,6 +41,7 @@ class Command(BaseCommand):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
 
+            # Create Property
             prop, created = Property.objects.get_or_create(
                 title=row["title"],
                 defaults={
@@ -57,6 +60,26 @@ class Command(BaseCommand):
             )
 
             if created:
+                # Handle amenities
+                amenities_raw = row.get("amenities", "")
+                if pd.notna(amenities_raw) and amenities_raw:
+                    for amenity_str in str(amenities_raw).split("|"):
+                        amenity_str = amenity_str.strip()
+                        if not amenity_str:
+                            continue
+                        # Split icon and name
+                        parts = amenity_str.split(" ", 1)
+                        if len(parts) == 2:
+                            icon, name = parts[0], parts[1]
+                        else:
+                            icon, name = "", parts[0]
+
+                        amenity, _ = Amenity.objects.get_or_create(
+                            name=name,
+                            defaults={"icon": icon}
+                        )
+                        prop.amenities.add(amenity)
+
                 created_count += 1
                 self.stdout.write(self.style.SUCCESS(f"  ✔ Created: {prop.title}"))
             else:
@@ -64,5 +87,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"  — Skipped (exists): {prop.title}")
 
         self.stdout.write(
-            self.style.SUCCESS(f"\nDone! Created: {created_count}, Skipped: {skipped_count}")
+            self.style.SUCCESS(
+                f"\nDone! Created: {created_count}, Skipped: {skipped_count}"
+            )
         )

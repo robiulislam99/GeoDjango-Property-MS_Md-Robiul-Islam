@@ -1,45 +1,70 @@
 {% extends "base.html" %}
-{% block title %}{{ property.title }}{% endblock %}
+{% block title %}{{ property.title }} — StayFinder{% endblock %}
+{% block header_search_value %}{{ property.location.city }}, {{ property.location.state }}{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h1 style="padding-top:30px;">{{ property.title }}</h1>
-    <p>{{ property.location.city }}, {{ property.location.state }}, {{ property.location.country }}</p>
+    <div class="detail-header">
+        <h1>{{ property.title }}</h1>
+        <p class="location">📍 {{ property.address|default:property.location.city }}, {{ property.location.state }}, {{ property.location.country }}</p>
+    </div>
 
+    <!-- IMAGE GALLERY -->
     <div class="detail-gallery">
         {% for img in property.images.all|slice:":3" %}
             <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:property.title }}">
         {% empty %}
-            <img src="https://via.placeholder.com/800x400?text=No+Image" alt="No image">
+            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800" alt="Property">
+            <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800" alt="Property">
+            <img src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800" alt="Property">
         {% endfor %}
     </div>
 
-    <div class="detail-info">
+    <div class="detail-body">
+        <!-- LEFT CONTENT -->
         <div>
-            <h2>About this property</h2>
-            <p>{{ property.description }}</p>
+            <div class="detail-section">
+                <h2>About this property</h2>
+                <div class="detail-stats">
+                    <span>🛏 {{ property.bedrooms }} Bedrooms</span>
+                    <span>🚿 {{ property.bathrooms }} Bathrooms</span>
+                    {% if property.area_sqft %}<span>📐 {{ property.area_sqft }} sqft</span>{% endif %}
+                    <span>🏠 {{ property.get_property_type_display }}</span>
+                </div>
+                <p class="description">{{ property.description|default:"No description available." }}</p>
+            </div>
 
-            <h3>{{ property.bedrooms }} bedrooms · {{ property.bathrooms }} bathrooms
-                {% if property.area_sqft %} · {{ property.area_sqft }} sqft{% endif %}</h3>
-
-            <h2>Amenities</h2>
-            <ul class="amenities-list">
-                {% for amenity in property.amenities.all %}
-                    <li>{{ amenity.icon }} {{ amenity.name }}</li>
-                {% empty %}
-                    <li>No amenities listed</li>
-                {% endfor %}
-            </ul>
+            <div class="detail-section">
+                <h2>Amenities</h2>
+                <div class="amenities-grid">
+                    {% for amenity in property.amenities.all %}
+                        <div class="amenity-item">{{ amenity.icon }} {{ amenity.name }}</div>
+                    {% empty %}
+                        <p style="color:#888;">No amenities listed yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
+        <!-- BOOKING SIDEBAR -->
         <div>
-            <h2 class="price">${{ property.price }} / night</h2>
-            <p>Status: {{ property.get_status_display }}</p>
+            <div class="booking-sidebar">
+                <div class="booking-price">${{ property.price }} <span>/ night</span></div>
+                <div class="booking-meta">Status: {{ property.get_status_display }}</div>
 
-            {% if distance_km %}
-            <div class="distance-badge">
-                📍 {{ distance_km }} km from {{ property.location.city }} center
+                <a href="#" class="booking-btn">Check Availability</a>
+                <a href="#" class="booking-btn" style="background:#fff; color:#e03131; border:2px solid #e03131;">Contact Owner</a>
+
+                {% if distance_km %}
+                <div class="distance-badge">
+                    📍 {{ distance_km }} km from {{ property.location.city }} center
+                </div>
+                {% endif %}
+
+                <div style="margin-top:20px; font-size:13px; color:#888; text-align:center;">
+                    🔒 Safe & secure booking
+                </div>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>

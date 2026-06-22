@@ -1,49 +1,109 @@
 {% extends "base.html" %}
-{% block title %}Search Results{% if location_query %} for {{ location_query }}{% endif %}{% endblock %}
+{% block title %}{% if location_query %}{{ location_query }}{% else %}All Properties{% endif %} — StayFinder{% endblock %}
+{% block header_search_value %}{{ location_query }}{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h2 style="padding-top:30px;">
-        {{ total_results }} stays{% if location_query %} in {{ location_query }}{% endif %}
-    </h2>
+    <div class="search-page">
 
-    <div class="results-grid">
-        {% for property in page_obj %}
-        <a href="{% url 'property_detail' property.slug %}" class="property-card">
-            {% with property.images.first as img %}
-                {% if img %}
-                    <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:property.title }}">
-                {% else %}
-                    <img src="https://via.placeholder.com/400x300?text=No+Image" alt="No image">
-                {% endif %}
-            {% endwith %}
-            <div class="info">
-                <h3>{{ property.title }}</h3>
-                <p>{{ property.location.city }}, {{ property.location.state }}</p>
-                <p>{{ property.bedrooms }} bed · {{ property.bathrooms }} bath</p>
-                <p class="price">${{ property.price }} / night</p>
+        <!-- FILTERS SIDEBAR -->
+        <aside class="filters-sidebar">
+            <h3>🔍 Filter Results</h3>
+            <form method="get" action="{% url 'property_search' %}">
+                <input type="hidden" name="location" value="{{ location_query }}">
+
+                <div class="filter-group">
+                    <label>Property Type</label>
+                    <select name="type">
+                        <option value="">All Types</option>
+                        <option value="villa" {% if request.GET.type == 'villa' %}selected{% endif %}>Villa</option>
+                        <option value="cabin" {% if request.GET.type == 'cabin' %}selected{% endif %}>Cabin</option>
+                        <option value="condo" {% if request.GET.type == 'condo' %}selected{% endif %}>Condo</option>
+                        <option value="apartment" {% if request.GET.type == 'apartment' %}selected{% endif %}>Apartment</option>
+                        <option value="house" {% if request.GET.type == 'house' %}selected{% endif %}>House</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Price per Night ($)</label>
+                    <div class="filter-row">
+                        <input type="number" name="min_price" placeholder="Min" value="{{ request.GET.min_price }}">
+                        <input type="number" name="max_price" placeholder="Max" value="{{ request.GET.max_price }}">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Min Bedrooms</label>
+                    <select name="bedrooms">
+                        <option value="">Any</option>
+                        <option value="1" {% if request.GET.bedrooms == '1' %}selected{% endif %}>1+</option>
+                        <option value="2" {% if request.GET.bedrooms == '2' %}selected{% endif %}>2+</option>
+                        <option value="3" {% if request.GET.bedrooms == '3' %}selected{% endif %}>3+</option>
+                        <option value="4" {% if request.GET.bedrooms == '4' %}selected{% endif %}>4+</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="filter-btn">Apply Filters</button>
+                <a href="{% url 'property_search' %}?location={{ location_query }}">
+                    <button type="button" class="filter-btn-clear">Clear Filters</button>
+                </a>
+            </form>
+        </aside>
+
+        <!-- RESULTS -->
+        <div>
+            <div class="results-header">
+                <h2>{{ total_results }} stay{{ total_results|pluralize }} {% if location_query %}in {{ location_query }}{% endif %}</h2>
             </div>
-        </a>
-        {% empty %}
-        <p>No properties found for this location.</p>
-        {% endfor %}
-    </div>
 
-    <div class="pagination">
-        {% if page_obj.has_previous %}
-            <a href="?location={{ location_query }}&page={{ page_obj.previous_page_number }}">&laquo; Prev</a>
-        {% endif %}
+            <div class="results-grid">
+                {% for property in page_obj %}
+                <a href="{% url 'property_detail' property.slug %}" class="property-card">
+                    <div class="card-img-wrapper">
+                        {% with property.images.first as img %}
+                            {% if img %}
+                                <img src="{{ img.image.url }}" alt="{{ property.title }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" alt="Property">
+                            {% endif %}
+                        {% endwith %}
+                        {% if property.is_featured %}
+                            <span class="card-badge">Featured</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">{{ property.title }}</div>
+                        <div class="card-location">📍 {{ property.location.city }}, {{ property.location.state }}</div>
+                        <div class="card-meta">🛏 {{ property.bedrooms }} bed · 🚿 {{ property.bathrooms }} bath
+                            {% if property.area_sqft %} · {{ property.area_sqft }} sqft{% endif %}
+                        </div>
+                        <div class="card-price">${{ property.price }} <span>/ night</span></div>
+                    </div>
+                </a>
+                {% empty %}
+                <p style="grid-column:1/-1; padding:40px 0; color:#666;">
+                    No properties found. Try a different location or clear the filters.
+                </p>
+                {% endfor %}
+            </div>
 
-        {% for num in page_obj.paginator.page_range %}
-            {% if num == page_obj.number %}
-                <span class="current">{{ num }}</span>
-            {% else %}
-                <a href="?location={{ location_query }}&page={{ num }}">{{ num }}</a>
-            {% endif %}
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-            <a href="?location={{ location_query }}&page={{ page_obj.next_page_number }}">Next &raquo;</a>
-        {% endif %}
+            <!-- PAGINATION -->
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?location={{ location_query }}&page={{ page_obj.previous_page_number }}&type={{ request.GET.type }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&bedrooms={{ request.GET.bedrooms }}">&laquo; Prev</a>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <span class="current">{{ num }}</span>
+                    {% else %}
+                        <a href="?location={{ location_query }}&page={{ num }}&type={{ request.GET.type }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&bedrooms={{ request.GET.bedrooms }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <a href="?location={{ location_query }}&page={{ page_obj.next_page_number }}&type={{ request.GET.type }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&bedrooms={{ request.GET.bedrooms }}">Next &raquo;</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

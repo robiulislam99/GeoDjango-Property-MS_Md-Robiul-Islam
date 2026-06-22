@@ -30,6 +30,11 @@ def location_autocomplete(request):
 
 def property_search(request):
     location_query = request.GET.get("location", "").strip()
+    property_type = request.GET.get("type", "").strip()
+    min_price = request.GET.get("min_price", "").strip()
+    max_price = request.GET.get("max_price", "").strip()
+    bedrooms = request.GET.get("bedrooms", "").strip()
+
     properties = Property.objects.filter(is_active=True).select_related("location")
 
     if location_query:
@@ -39,12 +44,18 @@ def property_search(request):
             | Q(location__country__icontains=location_query)
             | Q(location__name__icontains=location_query)
         )
+    if property_type:
+        properties = properties.filter(property_type=property_type)
+    if min_price:
+        properties = properties.filter(price__gte=min_price)
+    if max_price:
+        properties = properties.filter(price__lte=max_price)
+    if bedrooms:
+        properties = properties.filter(bedrooms__gte=bedrooms)
 
     properties = properties.order_by("-is_featured", "-created_at")
-
     paginator = Paginator(properties, 9)
-    page_number = request.GET.get("page", 1)
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(request.GET.get("page", 1))
 
     return render(request, "property_app/search_results.html", {
         "page_obj": page_obj,
