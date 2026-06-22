@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Search Results{% if location_query %} for {{ location_query }}{% endif %}{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 style="padding-top:30px;">
+        {{ total_results }} stays{% if location_query %} in {{ location_query }}{% endif %}
+    </h2>
+
+    <div class="results-grid">
+        {% for property in page_obj %}
+        <a href="{% url 'property_detail' property.slug %}" class="property-card">
+            {% with property.images.first as img %}
+                {% if img %}
+                    <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:property.title }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/400x300?text=No+Image" alt="No image">
+                {% endif %}
+            {% endwith %}
+            <div class="info">
+                <h3>{{ property.title }}</h3>
+                <p>{{ property.location.city }}, {{ property.location.state }}</p>
+                <p>{{ property.bedrooms }} bed · {{ property.bathrooms }} bath</p>
+                <p class="price">${{ property.price }} / night</p>
+            </div>
+        </a>
+        {% empty %}
+        <p>No properties found for this location.</p>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?location={{ location_query }}&page={{ page_obj.previous_page_number }}">&laquo; Prev</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <span class="current">{{ num }}</span>
+            {% else %}
+                <a href="?location={{ location_query }}&page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?location={{ location_query }}&page={{ page_obj.next_page_number }}">Next &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
