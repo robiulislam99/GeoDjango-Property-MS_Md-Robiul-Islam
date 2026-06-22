@@ -1,6 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from .models import Location
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.contrib.gis.db.models.functions import Distance
+from .models import Location, Property
 
 
 def home(request):
@@ -23,3 +26,51 @@ def location_autocomplete(request):
             for loc in locations
         ]
     return JsonResponse({"results": results})
+
+
+def property_search(request):
+    location_query = request.GET.get("location", "").strip()
+    properties = Property.objects.filter(is_active=True).select_related("location")
+
+    if location_query:
+        properties = properties.filter(
+            Q(location__city__icontains=location_query)
+            | Q(location__state__icontains=location_query)
+            | Q(location__country__icontains=location_query)
+            | Q(location__name__icontains=location_query)
+        )
+
+    properties = properties.order_by("-is_featured", "-created_at")
+
+    paginator = Paginator(properties, 9)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "property_app/search_results.html", {
+        "page_obj": page_obj,
+        "location_query": location_query,
+        "total_results": paginator.count,
+    })
+
+
+def property_detail(request, slug):
+    property_obj = get_object_or_404(
+        Property.objects.select_related("location").prefetch_related("images", "amenities"),
+        slug=slug,
+        is_active=True,
+    )
+
+    distance_km = None
+    if property_obj.point and property_obj.location.point:
+        annotated = (
+            Property.objects.filter(pk=property_obj.pk)
+            .annotate(distance=Distance("point", property_obj.location.point))
+            .first()
+        )
+        if annotated and annotated.distance is not None:
+            distance_km = round(annotated.distance.km, 2)
+
+    return render(request, "property_app/property_detail.html", {
+        "property": property_obj,
+        "distance_km": distance_km,
+    })
