@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}StayFinder — Find Your Perfect Vacation Rental{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>Find your next vacation rental</h1>
+        <form class="search-form" action="{% url 'property_search' %}" method="get">
+            <div class="autocomplete-wrapper">
+                <input type="text" id="location-input" name="location" placeholder="Where are you going?" autocomplete="off" required>
+                <div id="autocomplete-results" class="autocomplete-results"></div>
+            </div>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const input = document.getElementById("location-input");
+const resultsBox = document.getElementById("autocomplete-results");
+let debounceTimer;
+
+input.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    const q = input.value.trim();
+    resultsBox.innerHTML = "";
+    if (q.length < 2) return;
+
+    debounceTimer = setTimeout(() => {
+        fetch(`/api/locations/autocomplete/?q=${encodeURIComponent(q)}`)
+            .then(res => res.json())
+            .then(data => {
+                resultsBox.innerHTML = "";
+                data.results.forEach(loc => {
+                    const div = document.createElement("div");
+                    div.className = "autocomplete-item";
+                    div.textContent = loc.label;
+                    div.addEventListener("click", () => {
+                        input.value = loc.label;
+                        resultsBox.innerHTML = "";
+                    });
+                    resultsBox.appendChild(div);
+                });
+            });
+    }, 300);
+});
+
+document.addEventListener("click", (e) => {
+    if (!e.target.closest(".autocomplete-wrapper")) {
+        resultsBox.innerHTML = "";
+    }
+});
+</script>
+{% endblock %}
