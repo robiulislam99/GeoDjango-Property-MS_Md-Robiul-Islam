@@ -85,3 +85,15 @@ def property_detail(request, slug):
         "property": property_obj,
         "distance_km": distance_km,
     })
+
+def home(request):
+    featured = Property.objects.filter(
+        is_active=True, is_featured=True
+    ).select_related("location").prefetch_related("images")[:4]
+
+    if not featured:
+        featured = Property.objects.filter(
+            is_active=True
+        ).select_related("location").prefetch_related("images").order_by("-created_at")[:4]
+
+    return render(request, "property_app/home.html", {"featured": featured})

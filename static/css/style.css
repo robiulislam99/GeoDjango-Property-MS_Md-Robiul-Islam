@@ -105,3 +105,68 @@ a { text-decoration: none; color: inherit; }
 .secure-note { text-align: center; font-size: 13px; color: #aaa; margin-top: 16px; }
 
 .site-footer { background: #1a1a1a; color: #888; text-align: center; padding: 30px 0; font-size: 14px; }
+
+/* ── NAV ── */
+.main-nav { display: flex; gap: 4px; }
+.nav-link { padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; color: #444; transition: all 0.15s; }
+.nav-link:hover, .nav-link.active { background: #fff0f0; color: #e03131; }
+
+/* ── HERO ── */
+.hero {
+    background: linear-gradient(135deg, #b91c1c 0%, #e03131 40%, #ea580c 100%);
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+}
+.hero-overlay { width: 100%; padding: 80px 0; }
+.hero-text { text-align: center; color: #fff; margin-bottom: 36px; }
+.hero-text h1 { font-size: 52px; font-weight: 900; line-height: 1.15; margin-bottom: 14px; text-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+.hero-text p { font-size: 19px; opacity: 0.92; }
+.hero-search { background: #fff; border-radius: 14px; padding: 10px; max-width: 680px; margin: 0 auto 32px; display: flex; gap: 10px; box-shadow: 0 12px 40px rgba(0,0,0,0.22); }
+.hero-search input { flex: 1; padding: 15px 20px; border: 1.5px solid #eee; border-radius: 10px; font-size: 16px; outline: none; color: #222; }
+.hero-search input:focus { border-color: #e03131; }
+.hero-search button { background: #e03131; color: #fff; border: none; padding: 15px 36px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 16px; white-space: nowrap; transition: background 0.2s; }
+.hero-search button:hover { background: #c92a2a; }
+.hero-stats { display: flex; justify-content: center; gap: 48px; }
+.hero-stat { text-align: center; color: #fff; }
+.hero-stat strong { display: block; font-size: 28px; font-weight: 800; }
+.hero-stat span { font-size: 13px; opacity: 0.85; }
+
+/* ── QUICK FILTERS ── */
+.quick-filters { background: #fff; border-bottom: 1px solid #eee; padding: 16px 0; }
+.filter-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.pill { padding: 8px 18px; border-radius: 24px; border: 1.5px solid #e0e0e0; font-size: 14px; font-weight: 600; color: #444; background: #fff; transition: all 0.15s; white-space: nowrap; }
+.pill:hover, .pill.active { background: #e03131; color: #fff; border-color: #e03131; }
+
+/* ── FEATURED SECTION ── */
+.featured-section { padding: 60px 0; }
+.section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+.section-header h2 { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+.section-header p { color: #777; font-size: 15px; }
+.view-all-btn { background: #fff; border: 2px solid #e03131; color: #e03131; padding: 10px 22px; border-radius: 8px; font-weight: 700; font-size: 14px; transition: all 0.2s; white-space: nowrap; }
+.view-all-btn:hover { background: #e03131; color: #fff; }
+
+/* ── NO IMAGE PLACEHOLDER ── */
+.no-image { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 64px; background: #f5f5f5; }
+.card-type-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.55); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 12px; }
+.card-amenities { display: flex; gap: 6px; font-size: 16px; padding: 4px 0; }
+
+/* ── WHY US ── */
+.why-us { background: #fff; padding: 70px 0; }
+.why-us h2 { text-align: center; font-size: 30px; font-weight: 800; margin-bottom: 40px; }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.why-card { text-align: center; padding: 32px 20px; border-radius: 14px; background: #fafafa; border: 1px solid #eee; transition: transform 0.2s, box-shadow 0.2s; }
+.why-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.why-icon { font-size: 40px; margin-bottom: 16px; }
+.why-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+.why-card p { font-size: 14px; color: #666; line-height: 1.6; }
+
+/* ── FOOTER ── */
+.site-footer { background: #111; color: #aaa; padding: 56px 0 0; }
+.footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 48px; }
+.footer-logo { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+.footer-brand p { font-size: 14px; line-height: 1.7; max-width: 240px; }
+.footer-links h4 { color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
+.footer-links a { display: block; color: #aaa; font-size: 14px; margin-bottom: 10px; transition: color 0.15s; }
+.footer-links a:hover { color: #e03131; }
+.footer-bottom { border-top: 1px solid #2a2a2a; text-align: center; padding: 20px 0; font-size: 13px; color: #666; }

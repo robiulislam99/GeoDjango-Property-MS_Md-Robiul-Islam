@@ -1,26 +1,136 @@
 {% extends "base.html" %}
 {% block title %}StayFinder — Find Your Perfect Vacation Rental{% endblock %}
+{% block nav_home %}active{% endblock %}
+
 {% block content %}
+
+<!-- HERO -->
 <section class="hero">
-    <div class="container">
-        <h1>Find your perfect vacation rental</h1>
-        <p>Search over 1,000 properties worldwide</p>
-        <form class="hero-search" action="{% url 'property_search' %}" method="get">
-            <div class="autocomplete-wrapper">
-                <input type="text" id="hero-input" name="location"
-                       placeholder="Where are you going? e.g. Destin, Florida" autocomplete="off" required>
-                <div class="autocomplete-results" id="hero-autocomplete"></div>
+    <div class="hero-overlay">
+        <div class="container">
+            <div class="hero-text">
+                <h1>Find Your Perfect<br>Vacation Rental</h1>
+                <p>Discover amazing stays across the world — beaches, mountains, cities and more</p>
             </div>
-            <button type="submit">Search</button>
-        </form>
+            <form class="hero-search" action="{% url 'property_search' %}" method="get">
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="hero-input" name="location"
+                           placeholder="🔍  Where are you going? e.g. Destin, Florida"
+                           autocomplete="off">
+                    <div class="autocomplete-results" id="hero-autocomplete"></div>
+                </div>
+                <button type="submit">Search</button>
+            </form>
+            <div class="hero-stats">
+                <div class="hero-stat"><strong>500+</strong><span>Properties</span></div>
+                <div class="hero-stat"><strong>50+</strong><span>Destinations</span></div>
+                <div class="hero-stat"><strong>10k+</strong><span>Happy Guests</span></div>
+            </div>
+        </div>
     </div>
 </section>
+
+<!-- QUICK FILTERS -->
+<section class="quick-filters">
+    <div class="container">
+        <div class="filter-pills">
+            <a href="{% url 'property_search' %}" class="pill active">🏠 All</a>
+            <a href="{% url 'property_search' %}?type=villa" class="pill">🏖️ Villas</a>
+            <a href="{% url 'property_search' %}?type=cabin" class="pill">🌲 Cabins</a>
+            <a href="{% url 'property_search' %}?type=condo" class="pill">🏢 Condos</a>
+            <a href="{% url 'property_search' %}?type=apartment" class="pill">🏙️ Apartments</a>
+            <a href="{% url 'property_search' %}?type=house" class="pill">🏡 Houses</a>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURED PROPERTIES -->
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <h2>Featured Properties</h2>
+                <p>Hand-picked stays for an unforgettable experience</p>
+            </div>
+            <a href="{% url 'property_search' %}" class="view-all-btn">View All →</a>
+        </div>
+
+        <div class="results-grid">
+            {% for property in featured %}
+            <a href="{% url 'property_detail' property.slug %}" class="property-card">
+                <div class="card-img-wrapper">
+                    {% with property.images.first as img %}
+                        {% if img %}
+                            <img src="{{ img.image.url }}" alt="{{ property.title }}">
+                        {% else %}
+                            <div class="no-image">🏠</div>
+                        {% endif %}
+                    {% endwith %}
+                    {% if property.is_featured %}
+                        <span class="card-badge">⭐ Featured</span>
+                    {% endif %}
+                    <span class="card-type-badge">{{ property.get_property_type_display }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">{{ property.title }}</div>
+                    <div class="card-location">📍 {{ property.location.city }}, {{ property.location.state }}</div>
+                    <div class="card-meta">🛏 {{ property.bedrooms }} bed · 🚿 {{ property.bathrooms }} bath
+                        {% if property.area_sqft %} · {{ property.area_sqft }} sqft{% endif %}
+                    </div>
+                    {% if property.amenities.all %}
+                    <div class="card-amenities">
+                        {% for amenity in property.amenities.all|slice:":3" %}
+                            <span>{{ amenity.icon }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="card-price">${{ property.price }} <span>/ night</span></div>
+                </div>
+            </a>
+            {% empty %}
+            <p>No properties available yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- WHY US -->
+<section class="why-us">
+    <div class="container">
+        <h2>Why Choose StayFinder?</h2>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="why-icon">🔍</div>
+                <h3>Easy Search</h3>
+                <p>Find the perfect property with our powerful location-based search and smart filters.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-icon">🏆</div>
+                <h3>Verified Properties</h3>
+                <p>Every listing is verified to ensure you get exactly what you see.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-icon">💰</div>
+                <h3>Best Prices</h3>
+                <p>We compare prices across thousands of properties to get you the best deal.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-icon">🛡️</div>
+                <h3>Secure Booking</h3>
+                <p>Your payment and personal information are always safe and protected.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
 
 {% block extra_js %}
 <script>
 (function() {
     const input = document.getElementById('hero-input');
     const box = document.getElementById('hero-autocomplete');
+    if (!input || !box) return;
     let timer;
     input.addEventListener('input', () => {
         clearTimeout(timer);
@@ -47,5 +157,4 @@
     });
 })();
 </script>
-{% endblock %}
 {% endblock %}

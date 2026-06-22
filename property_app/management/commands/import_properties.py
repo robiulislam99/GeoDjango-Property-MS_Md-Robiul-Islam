@@ -55,7 +55,11 @@ class Command(BaseCommand):
                     "bathrooms": int(row.get("bathrooms", 0)),
                     "area_sqft": row.get("area_sqft") or None,
                     "address": row.get("address", ""),
-                    "point": Point(float(row["longitude"]), float(row["latitude"]), srid=4326),
+                    "point": Point(
+                        float(row.get("prop_longitude", row["longitude"])),
+                        float(row.get("prop_latitude", row["latitude"])),
+                        srid=4326
+                    ),
                 },
             )
 
