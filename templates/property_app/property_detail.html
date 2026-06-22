@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ property.title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 style="padding-top:30px;">{{ property.title }}</h1>
+    <p>{{ property.location.city }}, {{ property.location.state }}, {{ property.location.country }}</p>
+
+    <div class="detail-gallery">
+        {% for img in property.images.all|slice:":3" %}
+            <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:property.title }}">
+        {% empty %}
+            <img src="https://via.placeholder.com/800x400?text=No+Image" alt="No image">
+        {% endfor %}
+    </div>
+
+    <div class="detail-info">
+        <div>
+            <h2>About this property</h2>
+            <p>{{ property.description }}</p>
+
+            <h3>{{ property.bedrooms }} bedrooms · {{ property.bathrooms }} bathrooms
+                {% if property.area_sqft %} · {{ property.area_sqft }} sqft{% endif %}</h3>
+
+            <h2>Amenities</h2>
+            <ul class="amenities-list">
+                {% for amenity in property.amenities.all %}
+                    <li>{{ amenity.icon }} {{ amenity.name }}</li>
+                {% empty %}
+                    <li>No amenities listed</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div>
+            <h2 class="price">${{ property.price }} / night</h2>
+            <p>Status: {{ property.get_status_display }}</p>
+
+            {% if distance_km %}
+            <div class="distance-badge">
+                📍 {{ distance_km }} km from {{ property.location.city }} center
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
