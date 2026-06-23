@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}RentRoam{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=11">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=12">
 </head>
 <body>
 
@@ -20,17 +20,16 @@
 
         <form class="header-search" action="{% url 'property_search' %}" method="get">
             <div class="autocomplete-wrapper">
-                <input
-                    type="text"
-                    name="q"
-                    placeholder="Search by location or describe your stay..."
-                    autocomplete="off"
-                    value="{% block header_search_value %}{% endblock %}"
-                >
+                <input type="text" name="q"
+                       placeholder="Search by location or describe..."
+                       autocomplete="off"
+                       value="{% block header_search_value %}{% endblock %}">
                 <div class="autocomplete-results" id="header-autocomplete"></div>
             </div>
             <button type="submit">Search</button>
         </form>
+
+        <a href="/admin/" class="admin-btn">⚙️ Admin</a>
     </div>
 </header>
 

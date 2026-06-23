@@ -317,3 +317,20 @@ html, body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ── ADMIN BUTTON ── */
+.admin-btn {
+    background: #111;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+.admin-btn:hover { background: #e03131; color: #fff; }
+
+@media (max-width: 768px) {
+    .admin-btn { display: none; }
+}
