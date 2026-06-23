@@ -264,3 +264,56 @@ a { text-decoration: none; color: inherit; }
     .logo { font-size: 18px; }
     .header-search button { padding: 9px 12px; font-size: 13px; }
 }
+
+
+/* ── PREVENT HORIZONTAL OVERFLOW ── */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+.container {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .header-inner {
+        flex-wrap: wrap;
+        padding: 10px 0;
+    }
+
+    .logo {
+        flex: 1;
+    }
+
+    .main-nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        border-top: 1px solid #f0f0f0;
+        padding-top: 10px;
+        margin-top: 4px;
+    }
+
+    .header-search {
+        order: 2;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Fix footer overflow */
+    .footer-inner {
+        grid-template-columns: 1fr;
+    }
+
+    /* Fix why-us grid overflow */
+    .why-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .why-grid {
+        grid-template-columns: 1fr;
+    }
+}
