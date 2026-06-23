@@ -20,8 +20,13 @@
 
         <form class="header-search" action="{% url 'property_search' %}" method="get">
             <div class="autocomplete-wrapper">
-                <input type="text" name="location" placeholder="Search destination..."
-                       autocomplete="off" value="{% block header_search_value %}{% endblock %}">
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Search by location or describe your stay..."
+                    autocomplete="off"
+                    value="{% block header_search_value %}{% endblock %}"
+                >
                 <div class="autocomplete-results" id="header-autocomplete"></div>
             </div>
             <button type="submit">Search</button>
@@ -65,7 +70,7 @@
 
 <script>
 (function() {
-    const input = document.querySelector('.header-search input[name="location"]');
+    const input = document.querySelector('.header-search input[name="q"]');
     const box = document.getElementById('header-autocomplete');
     if (!input || !box) return;
     let timer;
@@ -83,7 +88,11 @@
                         const d = document.createElement('div');
                         d.className = 'autocomplete-item';
                         d.textContent = loc.label;
-                        d.onclick = () => { input.value = loc.label; box.innerHTML = ''; };
+                        d.onclick = () => {
+                            input.value = loc.label;
+                            box.innerHTML = '';
+                            input.closest('form').submit();
+                        };
                         box.appendChild(d);
                     });
                 });

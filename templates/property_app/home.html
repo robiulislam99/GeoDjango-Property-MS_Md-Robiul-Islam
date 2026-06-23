@@ -14,8 +14,8 @@
             </div>
             <form class="hero-search" action="{% url 'property_search' %}" method="get">
                 <div class="autocomplete-wrapper">
-                    <input type="text" id="hero-input" name="location"
-                           placeholder="🔍  Where are you going? e.g. Destin, Florida"
+                    <input type="text" id="hero-input" name="q"
+                           placeholder="🔍  Search by location or describe your stay..."
                            autocomplete="off">
                     <div class="autocomplete-results" id="hero-autocomplete"></div>
                 </div>
@@ -146,7 +146,11 @@
                         const d = document.createElement('div');
                         d.className = 'autocomplete-item';
                         d.textContent = loc.label;
-                        d.onclick = () => { input.value = loc.label; box.innerHTML = ''; };
+                        d.onclick = () => {
+                            input.value = loc.label;
+                            box.innerHTML = '';
+                            input.closest('form').submit();
+                        };
                         box.appendChild(d);
                     });
                 });
