@@ -28,17 +28,17 @@ services:
       DB_NAME: appdb
       DB_USER: postgres
       DB_PASSWORD: postgres
-      DB_HOST: postgres        # ← service name, not localhost
-      DB_PORT: 5432            # ← internal docker port, not 5442
+      DB_HOST: postgres
+      DB_PORT: 5432
+      PYTHONUNBUFFERED: 1
     ports:
       - "8000:8000"
     volumes:
-      - .:/app                 # live code reload
-      - media_data:/app/media
+      - .:/app
+      - ./media:/app/media     # ← bind mount instead of named volume
     depends_on:
       postgres:
         condition: service_healthy
 
 volumes:
-  postgres_data:
-  media_data:
+  postgres_data:               # ← media_data removed
