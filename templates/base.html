@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}StayFinder{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5">
+    <title>{% block title %}RentRoam{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=12">
 </head>
 <body>
 
 <header class="site-header">
     <div class="container header-inner">
-        <a href="{% url 'home' %}" class="logo">🏠 StayFinder</a>
+        <a href="{% url 'home' %}" class="logo">🏠 RentRoam</a>
 
         <nav class="main-nav">
             <a href="{% url 'home' %}" class="nav-link {% block nav_home %}{% endblock %}">Home</a>
@@ -20,12 +20,16 @@
 
         <form class="header-search" action="{% url 'property_search' %}" method="get">
             <div class="autocomplete-wrapper">
-                <input type="text" name="location" placeholder="Search destination..."
-                       autocomplete="off" value="{% block header_search_value %}{% endblock %}">
+                <input type="text" name="q"
+                       placeholder="Search by location or describe..."
+                       autocomplete="off"
+                       value="{% block header_search_value %}{% endblock %}">
                 <div class="autocomplete-results" id="header-autocomplete"></div>
             </div>
             <button type="submit">Search</button>
         </form>
+
+        <a href="/admin/" class="admin-btn">⚙️ Admin</a>
     </div>
 </header>
 
@@ -34,7 +38,7 @@
 <footer class="site-footer">
     <div class="container footer-inner">
         <div class="footer-brand">
-            <div class="footer-logo">🏠 StayFinder</div>
+            <div class="footer-logo">🏠 RentRoam</div>
             <p>Find your perfect vacation rental anywhere in the world.</p>
         </div>
         <div class="footer-links">
@@ -59,13 +63,25 @@
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; 2026 StayFinder. All rights reserved.</p>
+        <p>&copy; 2026 RentRoam. All rights reserved.</p>
     </div>
 </footer>
 
 <script>
 (function() {
-    const input = document.querySelector('.header-search input[name="location"]');
+    // Mobile filter toggle
+const filterToggle = document.querySelector('.filter-toggle-btn');
+const sidebar = document.querySelector('.filters-sidebar');
+if (filterToggle && sidebar) {
+    sidebar.classList.add('collapsed');
+    filterToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        filterToggle.textContent = sidebar.classList.contains('collapsed')
+            ? '🔍 Show Filters'
+            : '✕ Hide Filters';
+    });
+}
+    const input = document.querySelector('.header-search input[name="q"]');
     const box = document.getElementById('header-autocomplete');
     if (!input || !box) return;
     let timer;
@@ -83,7 +99,11 @@
                         const d = document.createElement('div');
                         d.className = 'autocomplete-item';
                         d.textContent = loc.label;
-                        d.onclick = () => { input.value = loc.label; box.innerHTML = ''; };
+                        d.onclick = () => {
+                            input.value = loc.label;
+                            box.innerHTML = '';
+                            input.closest('form').submit();
+                        };
                         box.appendChild(d);
                     });
                 });
