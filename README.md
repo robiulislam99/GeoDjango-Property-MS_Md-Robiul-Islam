@@ -114,7 +114,7 @@ geodjango-property/
 
 ### 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/robiulislam99/GeoDjango-Property-MS_Md-Robiul-Islam.git
 cd geodjango-property
 ```
 
