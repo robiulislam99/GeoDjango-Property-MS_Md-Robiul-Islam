@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}StayFinder{% endblock %}</title>
+    <title>{% block title %}RentRoam{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5">
 </head>
 <body>
 
 <header class="site-header">
     <div class="container header-inner">
-        <a href="{% url 'home' %}" class="logo">🏠 StayFinder</a>
+        <a href="{% url 'home' %}" class="logo">🏠 RentRoam</a>
 
         <nav class="main-nav">
             <a href="{% url 'home' %}" class="nav-link {% block nav_home %}{% endblock %}">Home</a>
@@ -39,7 +39,7 @@
 <footer class="site-footer">
     <div class="container footer-inner">
         <div class="footer-brand">
-            <div class="footer-logo">🏠 StayFinder</div>
+            <div class="footer-logo">🏠 RentRoam</div>
             <p>Find your perfect vacation rental anywhere in the world.</p>
         </div>
         <div class="footer-links">
@@ -64,12 +64,24 @@
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; 2026 StayFinder. All rights reserved.</p>
+        <p>&copy; 2026 RentRoam. All rights reserved.</p>
     </div>
 </footer>
 
 <script>
 (function() {
+    // Mobile filter toggle
+const filterToggle = document.querySelector('.filter-toggle-btn');
+const sidebar = document.querySelector('.filters-sidebar');
+if (filterToggle && sidebar) {
+    sidebar.classList.add('collapsed');
+    filterToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        filterToggle.textContent = sidebar.classList.contains('collapsed')
+            ? '🔍 Show Filters'
+            : '✕ Hide Filters';
+    });
+}
     const input = document.querySelector('.header-search input[name="q"]');
     const box = document.getElementById('header-autocomplete');
     if (!input || !box) return;
