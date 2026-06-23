@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Location, Property, PropertyImage
+from .models import Location, Property, PropertyImage, Amenity
 
 
 class PropertyImageInline(admin.TabularInline):
@@ -28,6 +28,12 @@ class LocationAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
 
+@admin.register(Amenity)
+class AmenityAdmin(admin.ModelAdmin):
+    list_display = ("name", "icon")
+    search_fields = ("name",)
+
+
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     list_display = (
@@ -38,6 +44,7 @@ class PropertyAdmin(admin.ModelAdmin):
     search_fields = ("title", "address", "description")
     prepopulated_fields = {"slug": ("title",)}
     readonly_fields = ("created_at", "updated_at")
+    filter_horizontal = ("amenities",)
     inlines = [PropertyImageInline]
 
 
